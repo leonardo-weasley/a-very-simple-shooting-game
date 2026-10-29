@@ -1,0 +1,5 @@
+# 不上传的文件
+node_modules/
+*.log
+.env
+.DS_Store
