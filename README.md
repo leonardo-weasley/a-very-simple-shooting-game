@@ -16,6 +16,7 @@ node server.js
 
 ### 单人练习
 直接点「离线练枪」，无需服务器。
+You can play single-player here: https://leonardo-weasley.github.io/a-very-simple-shooting-game/
 
 ## 操作
 | 按键 | 功能 |
