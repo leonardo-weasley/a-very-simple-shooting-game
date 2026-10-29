@@ -11,18 +11,110 @@ const path = require('path');
 const os = require('os');
 const crypto = require('crypto');
 
-const PORT = process.env.PORT || 8080;
+const PORT = Number(process.env.PORT) || 8080;
 const MAX_HP = 100;
+const MATCH_DURATION = (Number(process.env.MATCH_MINUTES) || 20) * 60; // 默认 20 分钟（1200 秒）
 
-/* ================= 静态文件服务 ================= */
+/* 人数上限：支持命令行 `node server.js 12` / `--max=12` 或环境变量 `MAX_PLAYERS=12` */
+function parseInitialMaxPlayers() {
+  const arg = process.argv.slice(2).find(a => /^(--max=|\d+$)/.test(a));
+  const raw = arg ? (arg.startsWith('--max=') ? arg.slice(6) : arg) : process.env.MAX_PLAYERS;
+  const n = parseInt(raw, 10);
+  return Number.isFinite(n) ? Math.max(2, Math.min(32, n)) : 10;
+}
+let maxPlayers = parseInitialMaxPlayers();
+
+function clampMaxPlayers(n) {
+  const v = parseInt(n, 10);
+  if (!Number.isFinite(v)) return maxPlayers;
+  return Math.max(2, Math.min(32, v));
+}
+
+function getLanAddresses() {
+  const real = [], fallback = [];
+  const nets = os.networkInterfaces();
+  const virtualRe = /vethernet|wsl|hyper-v|vmware|vbox|virtualbox|docker|tap|tun|loopback|hamachi|zerotier|tailscale/i;
+  for (const name of Object.keys(nets)) {
+    const isVirt = virtualRe.test(name);
+    for (const ni of nets[name] || []) {
+      if (ni.family === 'IPv4' && !ni.internal && !ni.address.startsWith('169.254.')) {
+        (isVirt ? fallback : real).push(ni.address);
+      }
+    }
+  }
+  const all = real.length ? real : fallback;
+  all.sort((a, b) => (a.startsWith('192.168.') ? -1 : 1) - (b.startsWith('192.168.') ? -1 : 1));
+  return all;
+}
+
+function isLocalSocket(reqOrSocket) {
+  const addr = (reqOrSocket.socket ? reqOrSocket.socket.remoteAddress : reqOrSocket.remoteAddress) || '';
+  if (addr === '127.0.0.1' || addr === '::1' || addr === '::ffff:127.0.0.1') return true;
+  const clean = addr.replace(/^::ffff:/, '');
+  return getLanAddresses().includes(clean);
+}
+
+/* ================= 静态文件 & 房间信息接口 ================= */
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg',
   '.svg': 'image/svg+xml', '.ico': 'image/x-icon'
 };
 
+function teamCounts() {
+  let a = 0, b = 0;
+  for (const p of players.values()) (p.team === 0 ? a++ : b++);
+  return [a, b];
+}
+
+function roomSummary(req) {
+  const ips = getLanAddresses();
+  const urls = ips.map(ip => 'http://' + ip + ':' + PORT);
+  return {
+    port: PORT,
+    maxPlayers,
+    count: players.size,
+    teams: teamCounts(),
+    lanUrls: urls,
+    primaryUrl: urls[0] || ('http://localhost:' + PORT),
+    isHost: req ? isLocalSocket(req) : false,
+    players: roster()
+  };
+}
+
 const server = http.createServer((req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
+
   let p = decodeURIComponent(req.url.split('?')[0]);
+  if (p === '/api/info' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+    res.end(JSON.stringify(roomSummary(req)));
+    return;
+  }
+  if (p === '/api/config' && req.method === 'POST') {
+    let body = '';
+    req.on('data', c => { if (body.length < 4096) body += c; });
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body || '{}');
+        if (data.maxPlayers !== undefined) {
+          maxPlayers = clampMaxPlayers(data.maxPlayers);
+          broadcast({ t: 'room', maxPlayers, count: players.size, teams: teamCounts() });
+          broadcast({ t: 'scores', list: scoreList(), maxPlayers, count: players.size });
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify(roomSummary(req)));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ error: 'Bad Request' }));
+      }
+    });
+    return;
+  }
+
   if (p === '/') p = '/index.html';
   const safe = path.normalize(p).replace(/^(\.\.[/\\])+/, '');
   const file = path.join(__dirname, safe);
@@ -121,20 +213,61 @@ server.on('upgrade', (req, socket) => {
 
 /* ================= 游戏逻辑 ================= */
 let nextId = 1;
-const players = new Map();   // id -> {conn,name,team,hp,alive,kills,deaths,x,y,z}
+const players = new Map();   // id -> {conn,name,team,hp,alive,kills,deaths,x,y,z,ry,rx,wep,mv,crouch,lastSeen}
+let matchStartTime = null;   // 当前对局开始时间戳(ms)
+let matchOver = false;
+
+function getElapsedSeconds() {
+  if (!matchStartTime) return 0;
+  return Math.min(MATCH_DURATION, Math.max(0, Math.floor((Date.now() - matchStartTime) / 1000)));
+}
+function teamKills() {
+  let k0 = 0, k1 = 0;
+  for (const p of players.values()) {
+    if (p.team === 0) k0 += p.kills || 0;
+    else k1 += p.kills || 0;
+  }
+  return [k0, k1];
+}
+function resetMatch() {
+  matchStartTime = players.size ? Date.now() : null;
+  matchOver = false;
+  for (const p of players.values()) {
+    p.hp = MAX_HP; p.alive = true; p.kills = 0; p.deaths = 0;
+    p.x = p.team === 0 ? -38 : 38; p.y = 0; p.z = 0;
+  }
+}
 
 function send(conn, obj) { try { conn.send(JSON.stringify(obj)); } catch (e) { } }
 function broadcast(obj, exceptId) {
   const s = JSON.stringify(obj);
   for (const [id, p] of players) if (id !== exceptId && !p.conn.closed) { try { p.conn.send(s); } catch (e) { } }
 }
-function roster() {
-  return [...players.values()].map(p => ({ id: p.id, name: p.name, team: p.team, hp: p.hp, alive: p.alive, kills: p.kills, deaths: p.deaths }));
+function serializePlayer(p) {
+  return {
+    id: p.id, name: p.name, team: p.team, hp: p.hp, alive: p.alive,
+    kills: p.kills, deaths: p.deaths,
+    x: p.x, y: p.y, z: p.z, ry: p.ry, rx: p.rx, wep: p.wep, mv: p.mv, crouch: p.crouch
+  };
 }
-function pickTeam() {
-  let a = 0, b = 0;
-  for (const p of players.values()) (p.team === 0 ? a++ : b++);
+function roster() {
+  return [...players.values()].map(serializePlayer);
+}
+function pickTeam(preferred) {
+  /* 一旦玩家选择了指定阵营（0 或 1），严格锁定为该阵营，不再被自动平衡篡改；仅当选择“自动分配”时按人数平衡 */
+  if (preferred === 0 || preferred === 1) return preferred;
+  const [a, b] = teamCounts();
   return a <= b ? 0 : 1;
+}
+function uniqueName(raw, id) {
+  const base = String(raw || ('战士' + id)).trim().slice(0, 12) || ('战士' + id);
+  const taken = new Set([...players.values()].map(p => p.name));
+  if (!taken.has(base)) return base;
+  for (let i = 2; i < 99; i++) {
+    const cand = (base.slice(0, 9) + '#' + i);
+    if (!taken.has(cand)) return cand;
+  }
+  return base;
 }
 function scoreList() {
   return roster().sort((x, y) => y.kills - x.kills || x.deaths - y.deaths);
@@ -145,33 +278,70 @@ function handleConn(conn) {
   conn.on('message', data => {
     let m;
     try { m = JSON.parse(data.toString('utf8')); } catch (e) { return; }
+    if (me) me.lastSeen = Date.now();
     if (!me && m.t !== 'join') return;
 
     switch (m.t) {
       case 'join': {
+        if (me) break;
+        if (players.size >= maxPlayers) {
+          send(conn, { t: 'reject', reason: '房间人数已满（' + players.size + '/' + maxPlayers + '），请稍后再试或调大上限' });
+          setTimeout(() => conn.close(), 80);
+          break;
+        }
         const id = nextId++;
+        const pref = (m.team === 0 || m.team === 1) ? m.team : -1;
+        const team = pickTeam(pref);
+        const spawnX = team === 0 ? -38 : 38;
+        const spawnYaw = team === 0 ? -Math.PI / 2 : Math.PI / 2;
+        if (m.maxPlayers !== undefined && players.size === 0) {
+          maxPlayers = clampMaxPlayers(m.maxPlayers);
+        }
+        if (!matchStartTime || matchOver) {
+          matchStartTime = Date.now();
+          matchOver = false;
+        }
         me = {
-          id, conn, name: String(m.name || ('玩家' + id)).slice(0, 12),
-          team: (m.team === 0 || m.team === 1) ? m.team : pickTeam(),
-          hp: MAX_HP, alive: true, kills: 0, deaths: 0, x: 0, y: 0, z: 0
+          id, conn, name: uniqueName(m.name, id),
+          team,
+          hp: MAX_HP, alive: true, kills: 0, deaths: 0,
+          x: spawnX, y: 0, z: 0, ry: spawnYaw, rx: 0, wep: 'ak47', mv: 0, crouch: 0,
+          lastSeen: Date.now()
         };
         players.set(id, me);
-        send(conn, { t: 'welcome', id, team: me.team, players: roster(), scores: scoreList(), time: Date.now() });
-        broadcast({ t: 'join', p: { id, name: me.name, team: me.team, hp: MAX_HP, alive: true, kills: 0, deaths: 0 } }, id);
-        broadcast({ t: 'scores', list: scoreList() });
+        const ips = getLanAddresses();
+        send(conn, {
+          t: 'welcome', id, name: me.name, team: me.team,
+          maxPlayers, count: players.size,
+          elapsed: getElapsedSeconds(), duration: MATCH_DURATION,
+          lanUrls: ips.map(ip => 'http://' + ip + ':' + PORT),
+          players: roster(), scores: scoreList(), time: Date.now()
+        });
+        broadcast({ t: 'join', p: serializePlayer(me) }, id);
+        broadcast({ t: 'room', maxPlayers, count: players.size, teams: teamCounts() });
+        broadcast({ t: 'scores', list: scoreList(), maxPlayers, count: players.size, elapsed: getElapsedSeconds(), duration: MATCH_DURATION });
         break;
       }
       case 's': {
-        me.x = m.p[0]; me.y = m.p[1]; me.z = m.p[2];
-        broadcast({ t: 's', id: me.id, p: m.p, ry: m.ry, rx: m.rx, wep: m.wep, mv: m.mv, alive: m.alive }, me.id);
+        if (matchOver) break;
+        if (Array.isArray(m.p) && m.p.length >= 3) {
+          me.x = +m.p[0] || 0; me.y = +m.p[1] || 0; me.z = +m.p[2] || 0;
+        }
+        me.ry = +m.ry || 0; me.rx = +m.rx || 0;
+        me.wep = m.wep || me.wep; me.mv = m.mv ? 1 : 0; me.crouch = m.crouch ? 1 : 0;
+        broadcast({
+          t: 's', id: me.id, p: [me.x, me.y, me.z],
+          ry: me.ry, rx: me.rx, wep: me.wep, mv: me.mv, crouch: me.crouch, alive: me.alive
+        }, me.id);
         break;
       }
       case 'shoot':
-        broadcast({ t: 'shoot', id: me.id, o: m.o, d: m.d, wep: m.wep }, me.id);
+        if (!matchOver) broadcast({ t: 'shoot', id: me.id, o: m.o, d: m.d, wep: m.wep }, me.id);
         break;
       case 'hit': {
+        if (matchOver) break;
         const target = players.get(m.id);
-        if (!target || !target.alive || !me.alive) break;
+        if (!target || !target.alive || !me.alive || target.team === me.team) break;
         const dmg = Math.max(1, Math.min(200, Math.round(m.dmg)));
         target.hp -= dmg;
         send(target.conn, { t: 'dmg', by: me.id, dmg, hp: Math.max(0, target.hp), weapon: m.wep, head: !!m.head, from: [me.x, me.y, me.z] });
@@ -179,19 +349,48 @@ function handleConn(conn) {
         if (target.hp <= 0) {
           target.hp = 0; target.alive = false; target.deaths++; me.kills++;
           broadcast({ t: 'kill', by: me.id, victim: target.id, weapon: m.wep, head: !!m.head });
-          broadcast({ t: 'scores', list: scoreList() });
+          broadcast({ t: 'scores', list: scoreList(), maxPlayers, count: players.size, elapsed: getElapsedSeconds(), duration: MATCH_DURATION });
         }
         break;
       }
       case 'respawn': {
+        if (matchOver) break;
         me.hp = MAX_HP; me.alive = true;
-        broadcast({ t: 'respawn', id: me.id }, me.id);
-        broadcast({ t: 'scores', list: scoreList() });
+        if (Array.isArray(m.p) && m.p.length >= 3) {
+          me.x = +m.p[0] || 0; me.y = +m.p[1] || 0; me.z = +m.p[2] || 0;
+        }
+        broadcast({ t: 'respawn', id: me.id, p: [me.x, me.y, me.z] }, me.id);
+        broadcast({ t: 'scores', list: scoreList(), maxPlayers, count: players.size, elapsed: getElapsedSeconds(), duration: MATCH_DURATION });
         break;
       }
-      case 'chat':
-        broadcast({ t: 'chat', id: me.id, name: me.name, msg: String(m.msg).slice(0, 80) });
+      case 'restart': {
+        if (matchOver) {
+          resetMatch();
+          broadcast({ t: 'restart', elapsed: 0, duration: MATCH_DURATION, list: scoreList() });
+        }
         break;
+      }
+      case 'config': {
+        if (m.maxPlayers !== undefined) {
+          maxPlayers = clampMaxPlayers(m.maxPlayers);
+          broadcast({ t: 'room', maxPlayers, count: players.size, teams: teamCounts(), by: me.name });
+          broadcast({ t: 'scores', list: scoreList(), maxPlayers, count: players.size });
+        }
+        break;
+      }
+      case 'chat': {
+        const raw = String(m.msg || '').trim().slice(0, 80);
+        if (!raw) break;
+        const match = raw.match(/^\/max\s+(\d+)$/i);
+        if (match) {
+          maxPlayers = clampMaxPlayers(match[1]);
+          broadcast({ t: 'room', maxPlayers, count: players.size, teams: teamCounts(), by: me.name });
+          broadcast({ t: 'chat', id: 0, name: '系统', sys: true, msg: me.name + ' 将房间人数上限调整为 ' + maxPlayers + ' 人' });
+          break;
+        }
+        broadcast({ t: 'chat', id: me.id, name: me.name, team: me.team, msg: raw });
+        break;
+      }
       case 'ping':
         send(conn, { t: 'pong', ts: m.ts });
         break;
@@ -201,30 +400,64 @@ function handleConn(conn) {
   conn.on('close', () => {
     if (me && players.get(me.id) === me) {
       players.delete(me.id);
-      broadcast({ t: 'leave', id: me.id });
-      broadcast({ t: 'scores', list: scoreList() });
+      broadcast({ t: 'leave', id: me.id, name: me.name });
+      broadcast({ t: 'room', maxPlayers, count: players.size, teams: teamCounts() });
+      broadcast({ t: 'scores', list: scoreList(), maxPlayers, count: players.size });
     }
   });
 }
 
-/* 每秒广播一次比分（用于计时/战绩板） */
+/* 每秒广播一次比分（用于计时/战绩板）、检查 20 分钟对局结束，并清理断线僵尸连接 */
 setInterval(() => {
-  if (players.size) broadcast({ t: 'scores', list: scoreList(), time: Date.now() });
-}, 1000);
-
-server.listen(PORT, '0.0.0.0', () => {
-  console.log('==============================================');
-  console.log('  火线对决 · LAN 对战服务器已启动');
-  console.log('==============================================');
-  const nets = os.networkInterfaces();
-  for (const name of Object.keys(nets)) {
-    for (const ni of nets[name] || []) {
-      if (ni.family === 'IPv4' && !ni.internal) {
-        console.log('  联机地址:  http://' + ni.address + ':' + PORT);
-      }
+  const now = Date.now();
+  for (const [id, p] of players) {
+    if (p.conn.closed || (now - p.lastSeen > 25000)) {
+      p.conn.close();
+      players.delete(id);
+      broadcast({ t: 'leave', id, name: p.name });
     }
   }
-  console.log('  本机地址:  http://localhost:' + PORT);
-  console.log('  局域网玩家在浏览器输入上面的联机地址即可加入');
+  if (!players.size) {
+    matchStartTime = null;
+    matchOver = false;
+    return;
+  }
+  const elapsed = getElapsedSeconds();
+  if (!matchOver && elapsed >= MATCH_DURATION) {
+    matchOver = true;
+    const [k0, k1] = teamKills();
+    const winner = k0 > k1 ? 0 : (k1 > k0 ? 1 : -1);
+    broadcast({
+      t: 'gameover',
+      winner,
+      teamKills: [k0, k1],
+      list: scoreList(),
+      elapsed: MATCH_DURATION,
+      duration: MATCH_DURATION
+    });
+  }
+  broadcast({ t: 'scores', list: scoreList(), maxPlayers, count: players.size, elapsed, duration: MATCH_DURATION, time: now });
+}, 1000);
+
+/* 控制台可随时输入数字或 `max 12` 调整最大人数 */
+if (process.stdin && process.stdin.on) {
+  process.stdin.setEncoding('utf8');
+  process.stdin.on('data', chunk => {
+    const line = String(chunk || '').trim();
+    const m = line.match(/^(?:max\s+)?(\d+)$/i);
+    if (m) {
+      maxPlayers = clampMaxPlayers(m[1]);
+      console.log('  [配置] 房间最大人数已更新为: ' + maxPlayers + ' 人');
+      broadcast({ t: 'room', maxPlayers, count: players.size, teams: teamCounts(), by: '服务器' });
+    }
+  });
+}
+
+server.listen(PORT, '0.0.0.0', () => {
+  const ip = getLanAddresses()[0] || 'localhost';
+  console.log('==============================================');
+  console.log('  火线对决 · LAN 对战服务器已启动');
+  console.log('  游戏入口:  http://' + ip + ':' + PORT);
+  console.log('  最大人数:  ' + maxPlayers + ' 人（控制台输入 "max 12" 或网页端可直接修改）');
   console.log('==============================================');
 });

@@ -40,23 +40,45 @@ h1{font-size:clamp(56px,11vw,132px);line-height:.86;font-weight:700;letter-spaci
   -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 14px 40px rgba(255,106,0,.22))}
 h1 .en{display:block;font-size:.19em;letter-spacing:.62em;color:var(--accent2);-webkit-text-fill-color:var(--accent2);margin-top:16px;font-weight:600}
 .sub{color:var(--muted);font-size:15px;letter-spacing:.12em;margin:18px 0 34px;max-width:560px;line-height:1.9}
-.form{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+.form{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:18px;align-items:flex-end}
 .field{display:flex;flex-direction:column;gap:8px}
 .field span{font-size:11px;letter-spacing:.28em;color:var(--muted)}
-.field input{background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--txt);
-  padding:13px 16px;font-family:var(--disp);font-size:16px;letter-spacing:.06em;width:230px;
+.field input,.field select{background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--txt);
+  padding:12px 15px;font-family:var(--disp);font-size:15px;letter-spacing:.06em;width:210px;
   clip-path:polygon(0 0,100% 0,100% 74%,93% 100%,0 100%);outline:none;transition:.25s}
-.field input:focus{border-color:var(--accent);background:rgba(255,106,0,.1)}
-.btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:34px}
+.field select{cursor:pointer;width:155px}
+.field select option{background:#121820;color:var(--txt)}
+.field input:focus,.field select:focus{border-color:var(--accent);background:rgba(255,106,0,.1)}
+.team-pick{display:flex;gap:6px}
+.team-opt{padding:11px 14px;font-size:13px;letter-spacing:.14em;background:rgba(255,255,255,.05);
+  border:1px solid var(--line);color:var(--muted);cursor:pointer;clip-path:none;font-weight:600;transition:.2s}
+.team-opt:hover{transform:none;letter-spacing:.14em;color:#fff;border-color:rgba(255,255,255,.35)}
+.team-opt.act[data-team="-1"]{background:rgba(255,255,255,.15);border-color:#fff;color:#fff}
+.team-opt.act[data-team="0"]{background:rgba(255,106,0,.24);border-color:var(--accent);color:var(--accent)}
+.team-opt.act[data-team="1"]{background:rgba(127,212,255,.22);border-color:var(--accent2);color:var(--accent2)}
+.lobby-card{background:rgba(14,19,25,.78);border:1px solid var(--line);padding:14px 18px;margin-bottom:20px;
+  max-width:660px;clip-path:polygon(0 0,100% 0,100% 84%,97% 100%,0 100%)}
+.lobby-row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:13px;letter-spacing:.12em}
+.lobby-status{display:flex;align-items:center;gap:10px}
+.dot{width:9px;height:9px;border-radius:50%;background:#5c6670;display:inline-block}
+.dot.ok{background:#52e580;box-shadow:0 0 8px #52e580}
+.lobby-meta{color:var(--muted);font-size:12px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.lobby-meta code{color:var(--accent2);background:rgba(127,212,255,.1);padding:3px 8px;border:1px solid rgba(127,212,255,.3);font-family:var(--disp)}
+.mini-btn{padding:6px 12px;font-size:11px;letter-spacing:.14em;background:rgba(127,212,255,.14);color:var(--accent2);
+  border:1px solid rgba(127,212,255,.4);clip-path:none}
+.mini-btn:hover{transform:none;letter-spacing:.14em;background:rgba(127,212,255,.26);color:#fff}
+.adv-toggle{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;letter-spacing:.14em;user-select:none}
+.btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px}
 button{cursor:pointer;font-family:var(--disp);font-size:15px;font-weight:700;letter-spacing:.22em;
   padding:16px 40px;border:none;color:#0b0e12;background:var(--accent);
   clip-path:polygon(0 0,100% 0,100% 68%,90% 100%,0 100%);transition:.28s cubic-bezier(.2,.8,.2,1)}
 button:hover{transform:translateY(-3px);letter-spacing:.3em;filter:brightness(1.12)}
+button:disabled{opacity:.5; pointer-events:none}
 button.ghost{background:transparent;color:var(--accent2);border:1px solid rgba(127,212,255,.42)}
 button.ghost:hover{background:rgba(127,212,255,.12);color:#fff}
-.help{border-top:1px solid var(--line);padding-top:18px;font-size:12.5px;letter-spacing:.16em;color:var(--muted);line-height:2.2}
+.help{border-top:1px solid var(--line);padding-top:14px;font-size:12.5px;letter-spacing:.15em;color:var(--muted);line-height:2.1}
 .help b{color:var(--accent2);font-weight:600}
-#menuMsg{margin-top:14px;color:var(--danger);font-size:13px;letter-spacing:.14em;min-height:18px}
+#menuMsg{margin-top:10px;color:var(--danger);font-size:13px;letter-spacing:.14em;min-height:18px}
 
 /* ---------- HUD ---------- */
 #hud{position:fixed;inset:0;z-index:20;pointer-events:none;font-family:var(--disp)}
@@ -77,14 +99,20 @@ button.ghost:hover{background:rgba(127,212,255,.12);color:#fff}
 #hitmarker.kill i{background:var(--danger);box-shadow:0 0 10px var(--danger)}
 @keyframes hm{0%{opacity:1;transform:translate(-50%,-50%) rotate(45deg) scale(.7)}100%{opacity:0;transform:translate(-50%,-50%) rotate(45deg) scale(1.5)}}
 
-#topbar{position:absolute;top:20px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:2px}
-#topbar .side{width:76px;height:42px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;
+#topbar{position:absolute;top:18px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:2px}
+#topbar .side{min-width:118px;padding:0 14px;height:42px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:22px;font-weight:700;
   background:var(--panel);border:1px solid var(--line)}
-#scoreA{color:var(--accent);clip-path:polygon(0 0,100% 0,100% 100%,14px 100%)}
-#scoreB{color:var(--accent2);clip-path:polygon(0 0,100% 0,100% 100%,14px 100%);transform:scaleX(-1)}
-#scoreB span{display:inline-block;transform:scaleX(-1)}   /* 抵消镜像，数字才正 */
-#timer{padding:0 18px;height:42px;display:flex;align-items:center;font-size:19px;letter-spacing:.14em;
-  background:rgba(255,255,255,.07);border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:#fff}
+#topbar .side small{font-size:11px;letter-spacing:.18em;font-weight:600;opacity:.85}
+#topbar .side.mine{box-shadow:0 0 16px rgba(255,255,255,.18);border-color:#fff}
+#scoreA{color:var(--accent);clip-path:polygon(0 0,100% 0,100% 100%,12px 100%)}
+#scoreB{color:var(--accent2);clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+#timer{padding:0 16px;height:42px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:17px;letter-spacing:.14em;
+  background:rgba(255,255,255,.07);border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:#fff;line-height:1.1}
+#roomCapHud{font-size:10px;letter-spacing:.18em;color:var(--muted)}
+#mySideBadge{position:absolute;top:66px;left:50%;transform:translateX(-50%);padding:4px 16px;font-size:12px;font-weight:700;
+  letter-spacing:.22em;background:var(--panel);border:1px solid var(--line);border-radius:2px}
+#mySideBadge.t0{color:var(--accent);border-color:rgba(255,106,0,.6);background:rgba(255,106,0,.14)}
+#mySideBadge.t1{color:var(--accent2);border-color:rgba(127,212,255,.6);background:rgba(127,212,255,.14)}
 
 #killfeed{position:absolute;top:22px;right:22px;display:flex;flex-direction:column;gap:7px;align-items:flex-end}
 .kf{display:flex;align-items:center;gap:10px;padding:7px 14px;background:var(--panel);border-right:3px solid var(--accent);
@@ -186,15 +214,49 @@ button.ghost:hover{background:rgba(127,212,255,.12);color:#fff}
     <p class="sub">复刻经典巷战地图结构 —— 中央仓库、集装箱巷道、双侧狙击台。<br>支持局域网实时联机对抗，也可离线对战机器人。</p>
     <div class="form">
       <div class="field"><span>作战代号</span><input id="nameInput" maxlength="12" value="战士001"></div>
-      <div class="field"><span>服务器地址</span><input id="hostInput" value="ws://localhost:8080"></div>
+      <div class="field">
+        <span>选择阵营</span>
+        <div class="team-pick" id="teamPick">
+          <button type="button" class="team-opt act" data-team="-1">自动平衡</button>
+          <button type="button" class="team-opt" data-team="0">烈焰 (橙)</button>
+          <button type="button" class="team-opt" data-team="1">雷霆 (蓝)</button>
+        </div>
+      </div>
+      <div class="field">
+        <span>房间人数上限</span>
+        <select id="maxPlayersSelect">
+          <option value="2">2 人 (1v1)</option>
+          <option value="4">4 人 (2v2)</option>
+          <option value="6">6 人 (3v3)</option>
+          <option value="8">8 人 (4v4)</option>
+          <option value="10" selected>10 人 (5v5)</option>
+          <option value="12">12 人 (6v6)</option>
+          <option value="16">16 人 (8v8)</option>
+          <option value="24">24 人 (12v12)</option>
+        </select>
+      </div>
+      <div class="field hidden" id="hostFieldWrap"><span>服务器地址（可选）</span><input id="hostInput" value="ws://localhost:8080"></div>
+    </div>
+    <div class="lobby-card" id="lobbyCard">
+      <div class="lobby-row">
+        <div class="lobby-status">
+          <i class="dot" id="lobbyDot"></i>
+          <span id="lobbyText">正在检测局域网房间…</span>
+        </div>
+        <span class="adv-toggle" id="btnToggleHost">手动指定服务器 IP</span>
+      </div>
+      <div class="lobby-meta">
+        <div>局域网玩家直接浏览器打开：<code id="inviteUrl">http://localhost:8080</code> （无需输入不同链接）</div>
+        <button type="button" class="mini-btn" id="btnCopyUrl">复制联机网址</button>
+      </div>
     </div>
     <div class="btns">
       <button id="btnJoin">加入对战</button>
       <button id="btnOffline" class="ghost">离线练枪</button>
     </div>
     <div class="help">
-      <b>WASD</b> 移动 &nbsp;·&nbsp; <b>SHIFT</b> 静步 &nbsp;·&nbsp; <b>空格</b> 跳跃 &nbsp;·&nbsp; <b>CTRL</b> 蹲下 &nbsp;·&nbsp; <b>鼠标左键</b> 开火 &nbsp;·&nbsp; <b>右键</b> 瞄准<br>
-      <b>R</b> 换弹 &nbsp;·&nbsp; <b>1-5</b> 切枪 &nbsp;·&nbsp; <b>Q</b> 上一把武器 &nbsp;·&nbsp; <b>Tab</b> 战绩板 &nbsp;·&nbsp; <b>Enter</b> 聊天 &nbsp;·&nbsp; <b>Esc</b> 暂停
+      <b>WASD</b> 移动 &nbsp;·&nbsp; <b>SHIFT</b> 冲刺 &nbsp;·&nbsp; <b>空格</b> 跳跃 &nbsp;·&nbsp; <b>CTRL</b> 蹲下 &nbsp;·&nbsp; <b>鼠标左键</b> 开火 &nbsp;·&nbsp; <b>右键</b> 瞄准<br>
+      <b>R</b> 换弹 &nbsp;·&nbsp; <b>1-5</b> 切枪 &nbsp;·&nbsp; <b>Q</b> 上一把武器 &nbsp;·&nbsp; <b>Tab</b> 战绩板 &nbsp;·&nbsp; <b>Enter</b> 聊天 (支持 <code>/max 人数</code>) &nbsp;·&nbsp; 对局时长 <b>20 分钟</b>
     </div>
     <div id="menuMsg"></div>
   </div>
@@ -204,10 +266,11 @@ button.ghost:hover{background:rgba(127,212,255,.12);color:#fff}
   <div id="crosshair"><i></i><i></i><i></i><i></i><i></i></div>
   <div id="hitmarker"><i></i><i></i><i></i><i></i></div>
   <div id="topbar">
-    <div class="side" id="scoreA"><span>0</span></div>
-    <div id="timer">00:00</div>
-    <div class="side" id="scoreB"><span>0</span></div>
+    <div class="side" id="scoreA"><small id="labelA">烈焰</small><span>0</span></div>
+    <div id="timer"><span id="timerTxt">00:00</span><span id="roomCapHud">在线 1/10</span></div>
+    <div class="side" id="scoreB"><span>0</span><small id="labelB">雷霆</small></div>
   </div>
+  <div id="mySideBadge" class="t0">我方阵营：烈焰 (橙) · 绿名=友军 / 红名=敌军</div>
   <div id="killfeed"></div>
   <div id="mmWrap"><canvas id="minimap" width="186" height="186"></canvas></div>
   <div id="mmLabel">SECTOR · 废弃工厂</div>
@@ -225,7 +288,7 @@ button.ghost:hover{background:rgba(127,212,255,.12);color:#fff}
   <div id="dmgDir"><i></i></div>
   <div id="scope" class="hidden"><div class="ring"></div><div class="l h"></div><div class="l v"></div></div>
   <div id="scoreboard" class="hidden">
-    <h3>作战战绩</h3>
+    <h3 id="scoreTitle">作战战绩</h3>
     <table>
       <thead><tr><th>代号</th><th>阵营</th><th>击杀</th><th>阵亡</th><th>状态</th></tr></thead>
       <tbody id="scoreBody"></tbody>
@@ -759,13 +822,20 @@ function nameSprite(text,color){
 class RemotePlayer{
   constructor(info){
     this.id=info.id;this.name=info.name;this.team=info.team;
-    this.target=new THREE.Vector3(info.x||0,info.y||0,info.z||0);
-    this.targetYaw=0;this.targetPitch=0;this.hp=info.hp||100;this.alive=info.alive!==false;
-    this.kills=0;this.deaths=0;
-    this.moving=0;this.anim=0;
+    const defPos=pickSpawn(this.team||0,0);
+    const ix=(typeof info.x==='number'&&(info.x!==0||info.z!==0))?info.x:defPos.x;
+    const iy=(typeof info.y==='number')?info.y:0;
+    const iz=(typeof info.z==='number'&&(info.x!==0||info.z!==0))?info.z:defPos.z;
+    this.target=new THREE.Vector3(ix,iy,iz);
+    this.targetYaw=typeof info.ry==='number'?info.ry:0;
+    this.targetPitch=typeof info.rx==='number'?info.rx:0;
+    this.hp=info.hp||100;this.alive=info.alive!==false;
+    this.kills=info.kills||0;this.deaths=info.deaths||0;
+    this.moving=info.mv?1:0;this.crouching=info.crouch?1:0;this.anim=0;
     const g=new THREE.Group();
     const col=this.team===0?0xff6a00:0x7fd4ff;
     const cloth=new THREE.MeshStandardMaterial({color:col,roughness:.78,metalness:.12});
+    this.clothMat=cloth;
     const dark=new THREE.MeshStandardMaterial({color:0x2c3238,roughness:.8,metalness:.18});
     const skin=new THREE.MeshStandardMaterial({color:0xd9a273,roughness:.82,metalness:.05});
     this.torso=box(g,0,1.16,0,.62,.78,.34,cloth);this.torso.userData={pid:this.id,part:'body'};
@@ -776,9 +846,10 @@ class RemotePlayer{
     this.legL=box(g,-.16,.42,0,.24,.84,.26,dark); this.legL.userData={pid:this.id,part:'leg'};
     this.legR=box(g,.16,.42,0,.24,.84,.26,dark);  this.legR.userData={pid:this.id,part:'leg'};
     box(g,.24,1.22,-.36,.13,.16,.62,matGun);
-    const tag=nameSprite(this.name,(this.team===myTeam)?'#8ef07a':'#ff6b6b');
-    g.add(tag);this.tag=tag;
+    this.tag=null;
+    this.refreshAppearance();
     g.position.copy(this.target);
+    g.rotation.y=this.targetYaw;
     this.group=g;
     scene.add(g);
     this.hitMeshes=[this.torso,this.head,this.legL,this.legR];
@@ -786,10 +857,24 @@ class RemotePlayer{
     this.waypoint=null;this.think=0;this.fireCd=0;this.strafe=Math.random()>.5?1:-1;
     this.alive=this.alive!==false;
   }
+  refreshAppearance(){
+    if(this.clothMat)this.clothMat.color.setHex(this.team===0?0xff6a00:0x7fd4ff);
+    if(this.tag&&this.group)this.group.remove(this.tag);
+    const isMate=this.team===myTeam;
+    const label=(isMate?'[友军] ':'[敌军] ')+this.name;
+    const tag=nameSprite(label,isMate?'#8ef07a':'#ff6b6b');
+    this.tag=tag;
+    if(this.group)this.group.add(tag);
+  }
   destroy(){scene.remove(this.group);}
-  setState(p,ry,rx,mv){
-    this.target.set(p[0],p[1],p[2]);
+  setState(p,ry,rx,mv,crouch,aliveFlag){
+    const nx=p[0],ny=p[1],nz=p[2];
+    const jumpDistSq=this.group.position.distanceToSquared(new THREE.Vector3(nx,ny,nz));
+    this.target.set(nx,ny,nz);
+    if(jumpDistSq>64)this.group.position.copy(this.target); /* 重生或初始同步大跨度直接瞬移 */
     this.targetYaw=ry;this.targetPitch=rx;this.moving=mv?1:0;
+    this.crouching=crouch?1:0;
+    if(typeof aliveFlag==='boolean')this.alive=aliveFlag;
   }
   update(dt){
     const g=this.group;
@@ -798,6 +883,7 @@ class RemotePlayer{
     g.visible=true;
     const k=1-Math.pow(.0022,dt);
     g.position.lerp(this.target,k);
+    g.scale.y=this.crouching?.76:1;
     let dy=this.targetYaw-g.rotation.y;
     while(dy>Math.PI)dy-=Math.PI*2;while(dy<-Math.PI)dy+=Math.PI*2;
     g.rotation.y+=dy*Math.min(1,dt*11);
@@ -807,7 +893,7 @@ class RemotePlayer{
     const sw=Math.sin(this.anim)*.62;
     this.legL.rotation.x=sw;this.legR.rotation.x=-sw;
     this.armL.rotation.x=-sw*.72;this.armR.rotation.x=sw*.72;
-    this.tag.material.opacity=this.alive?1:0;
+    if(this.tag)this.tag.material.opacity=this.alive?1:0;
   }
   /* --- 简单 AI：只攻击敌对阵营 --- */
   botThink(dt){
@@ -891,21 +977,70 @@ class RemotePlayer{
 function ensurePlayer(info){
   let rp=remote.get(info.id);
   if(!rp){rp=new RemotePlayer(info);remote.set(info.id,rp);}
-  else{rp.name=info.name;rp.team=info.team;}
+  else{
+    const teamChanged=rp.team!==info.team||rp.name!==info.name;
+    rp.name=info.name;rp.team=info.team;
+    if(typeof info.alive==='boolean')rp.alive=info.alive;
+    if(typeof info.x==='number'&&(info.x!==0||info.z!==0)){
+      rp.target.set(info.x,info.y||0,info.z);
+    }
+    if(teamChanged)rp.refreshAppearance();
+  }
   return rp;
+}
+function refreshAllRemoteTags(){
+  remote.forEach(r=>r.refreshAppearance());
+}
+function updateSideHUD(){
+  const isT0=myTeam===0;
+  const badge=$('#mySideBadge');
+  if(badge){
+    badge.className=isT0?'t0':'t1';
+    badge.textContent='我方阵营（已锁定）：'+(isT0?'烈焰 (橙 · 西基地)':'雷霆 (蓝 · 东基地)')+' · 绿名=友军 / 红名=敌军';
+  }
+  const sA=$('#scoreA'),sB=$('#scoreB'),lA=$('#labelA'),lB=$('#labelB');
+  if(sA)sA.classList.toggle('mine',isT0);
+  if(sB)sB.classList.toggle('mine',!isT0);
+  if(lA)lA.textContent=isT0?'烈焰 [我方]':'烈焰';
+  if(lB)lB.textContent=!isT0?'雷霆 [我方]':'雷霆';
+}
+function updateRoomCapHUD(){
+  const el=$('#roomCapHud');
+  if(!el)return;
+  if(Net.offline){
+    el.textContent='离线 4v5';
+  }else{
+    const cnt=roomCount||(remote.size+1);
+    el.textContent='在线 '+cnt+'/'+roomMaxPlayers;
+  }
 }
 
 /* ==================== 网络 ==================== */
+const MATCH_LIMIT=20*60; /* 20 分钟自动结束对局 */
+let roomMaxPlayers=10,roomCount=1,preferredTeam=-1,matchDuration=MATCH_LIMIT;
 const Net={
-  ws:null,id:null,connected:false,offline:false,
-  connect(url,name){
+  ws:null,id:null,connected:false,offline:false,_welcomeRes:null,_welcomeRej:null,
+  connect(url,name,teamPref,maxP){
     return new Promise((res,rej)=>{
       let ws;
       try{ws=new WebSocket(url);}catch(e){rej(e);return;}
-      const timer=setTimeout(()=>{try{ws.close();}catch(e){}rej(new Error('连接超时'));},6000);
-      ws.onopen=()=>{clearTimeout(timer);this.ws=ws;this.connected=true;res();};
-      ws.onerror=()=>{clearTimeout(timer);rej(new Error('无法连接服务器'));};
-      ws.onclose=()=>{this.connected=false;this.ws=null;if(this.id!==null&&gameStarted)toast('与服务器断开连接',3200);};
+      let settled=false;
+      const fail=err=>{if(settled)return;settled=true;this._welcomeRes=this._welcomeRej=null;rej(err);};
+      const timer=setTimeout(()=>{try{ws.close();}catch(e){}fail(new Error('连接超时'));},6000);
+      this._welcomeRes=msg=>{if(settled)return;settled=true;clearTimeout(timer);this._welcomeRes=this._welcomeRej=null;res(msg);};
+      this._welcomeRej=err=>{clearTimeout(timer);fail(err);};
+      ws.onopen=()=>{
+        this.ws=ws;this.connected=true;
+        /* 关键修复：连接成功后立即发送 join 握手包，服务器才会注册玩家并同步其他玩家 */
+        this.send({t:'join',name,team:teamPref,maxPlayers:maxP});
+      };
+      ws.onerror=()=>{clearTimeout(timer);fail(new Error('无法连接服务器'));};
+      ws.onclose=()=>{
+        clearTimeout(timer);
+        if(!settled)fail(new Error('连接已关闭'));
+        this.connected=false;this.ws=null;
+        if(this.id!==null&&gameStarted)toast('与服务器断开连接',3200);
+      };
       ws.onmessage=e=>{
         let m;try{m=JSON.parse(e.data);}catch(err){return;}
         onNet(m);
@@ -915,37 +1050,78 @@ const Net={
   send(o){if(this.connected&&this.ws&&this.ws.readyState===1){try{this.ws.send(JSON.stringify(o));}catch(e){}}}
 };
 
+function sendImmediateState(){
+  if(Net.offline||!Net.connected)return;
+  Net.send({
+    t:'s',
+    p:[+playerPos.x.toFixed(2),+playerPos.y.toFixed(2),+playerPos.z.toFixed(2)],
+    ry:+yaw.toFixed(3),rx:+pitch.toFixed(3),
+    wep:WORDER[curW],mv:(Math.abs(vel.x)+Math.abs(vel.z))>1?1:0,
+    crouch:crouch?1:0,alive
+  });
+}
+
 function onNet(m){
   switch(m.t){
+    case 'reject':{
+      if(Net._welcomeRej)Net._welcomeRej(new Error(m.reason||'加入被拒绝'));
+      break;
+    }
     case 'welcome':{
       Net.id=m.id;myTeam=m.team;
-      m.players.forEach(p=>{
+      if(m.name)myName=m.name;
+      if(m.maxPlayers)roomMaxPlayers=m.maxPlayers;
+      if(m.count)roomCount=m.count;
+      if(typeof m.duration==='number')matchDuration=m.duration;
+      if(typeof m.elapsed==='number')gameTime=m.elapsed;
+      offOver=false;
+      remote.forEach(r=>r.destroy());
+      remote.clear();
+      (m.players||[]).forEach(p=>{
         if(p.id===Net.id){hp=p.hp;return;}
         ensurePlayer(p);
       });
-      playerPos.copy(pickSpawn(myTeam,1));
+      if(m.scores)scoreData=m.scores;
+      const sp=pickSpawn(myTeam,1);
+      playerPos.copy(sp);
+      yaw=myTeam===0?-Math.PI/2:Math.PI/2;
+      pitch=0;
       vel.set(0,0,0);
-      addChat('系统','已加入对战 · 阵营 '+(myTeam===0?'烈焰':'雷霆'),'sys');
+      updateSideHUD();
+      updateRoomCapHUD();
+      updateScoreboard();
+      sendImmediateState();
+      const sideName=myTeam===0?'烈焰（橙色·西侧基地）':'雷霆（蓝色·东侧基地）';
+      addChat('系统','已加入对战 · 你的阵营：'+sideName+'（本局阵营已锁定）· 在线 '+roomCount+'/'+roomMaxPlayers,'sys');
+      toast('你的阵营：'+sideName,3400);
+      if(Net._welcomeRes)Net._welcomeRes(m);
       break;
     }
     case 'join':{
       if(m.p.id===Net.id)break;
       ensurePlayer(m.p);
-      addChat('系统',m.p.name+' 加入了战斗','sys');
+      roomCount=remote.size+1;
+      updateRoomCapHUD();
+      addChat('系统',m.p.name+' 加入了 '+(m.p.team===0?'烈焰':'雷霆')+' 阵营','sys');
       break;
     }
     case 'leave':{
       const rp=remote.get(m.id);
+      const leaveName=rp?rp.name:(m.name||'玩家');
       if(rp){rp.destroy();remote.delete(m.id);}
+      roomCount=remote.size+1;
+      updateRoomCapHUD();
+      addChat('系统',leaveName+' 离开了房间','sys');
       break;
     }
     case 's':{
-      const rp=remote.get(m.id);
-      if(rp)rp.setState(m.p,m.ry,m.rx,m.mv);
+      if(m.id===Net.id)break;
+      let rp=remote.get(m.id);
+      if(!rp)rp=ensurePlayer({id:m.id,name:'战士'+m.id,team:0,x:m.p[0],y:m.p[1],z:m.p[2],alive:m.alive});
+      rp.setState(m.p,m.ry,m.rx,m.mv,m.crouch,m.alive);
       break;
     }
     case 'shoot':{
-      const rp=remote.get(m.id);
       const o=new THREE.Vector3(m.o[0],m.o[1],m.o[2]);
       const d=new THREE.Vector3(m.d[0],m.d[1],m.d[2]);
       addTracer(o,o.clone().addScaledVector(d,60),0xffc98a);
@@ -966,24 +1142,76 @@ function onNet(m){
       const kn=remote.get(m.by)?remote.get(m.by).name:(m.by===Net.id?myName:'未知');
       const vn=remote.get(m.victim)?remote.get(m.victim).name:(m.victim===Net.id?myName:'未知');
       addKill(kn,vn,m.weapon,m.head);
-      if(m.victim===Net.id&&alive)die(m.by,m.weapon);
+      if(m.victim===Net.id&&alive)die(m.by,m.weapon,true);
       const rp=remote.get(m.victim);
       if(rp)rp.alive=false;
-      if(m.by===Net.id){/* 本地击杀 */}
       break;
     }
     case 'respawn':{
       const rp=remote.get(m.id);
-      if(rp){rp.alive=true;rp.hp=100;}
+      if(rp){
+        rp.alive=true;rp.hp=100;
+        if(Array.isArray(m.p)&&m.p.length>=3){
+          rp.target.set(m.p[0],m.p[1],m.p[2]);
+          rp.group.position.copy(rp.target);
+        }
+      }
+      break;
+    }
+    case 'room':{
+      if(m.maxPlayers)roomMaxPlayers=m.maxPlayers;
+      if(typeof m.count==='number')roomCount=m.count;
+      updateRoomCapHUD();
+      if(m.by)toast(m.by+' 将房间人数上限设为 '+roomMaxPlayers+' 人',2400);
       break;
     }
     case 'scores':{
-      scoreData=m.list;
+      scoreData=m.list||[];
+      if(m.maxPlayers)roomMaxPlayers=m.maxPlayers;
+      if(typeof m.count==='number')roomCount=m.count;
+      if(typeof m.duration==='number')matchDuration=m.duration;
+      if(typeof m.elapsed==='number'&&!offOver)gameTime=m.elapsed;
+      scoreData.forEach(s=>{
+        if(s.id===Net.id)return;
+        const rp=remote.get(s.id);
+        if(rp){rp.kills=s.kills||0;rp.deaths=s.deaths||0;rp.alive=s.alive!==false;}
+      });
+      updateRoomCapHUD();
       updateScoreboard();
       break;
     }
+    case 'gameover':{
+      if(m.list)scoreData=m.list;
+      if(typeof m.duration==='number')matchDuration=m.duration;
+      gameTime=matchDuration;
+      updateScoreboard();
+      if(!offOver){
+        offOver=true;
+        showWinScreen('time');
+      }
+      break;
+    }
+    case 'restart':{
+      offOver=false;
+      gameTime=0;hp=100;alive=true;
+      if(m.list)scoreData=m.list;
+      const sp=pickSpawn(myTeam,1);
+      playerPos.copy(sp);vel.set(0,0,0);
+      yaw=myTeam===0?-Math.PI/2:Math.PI/2;
+      WORDER.forEach(k=>{const w=WEAPONS[k];ammoState[k]={mag:w.mag,reserve:w.reserve};});
+      reloading=false;spreadAccum=0;
+      $('#winScreen').classList.add('hidden');
+      $('#deathScreen').classList.add('hidden');
+      $('#vignette').style.opacity=0;
+      $('#killfeed').innerHTML='';
+      updateWeaponUI();
+      updateScoreboard();
+      sendImmediateState();
+      resumeAudio();requestLock();
+      break;
+    }
     case 'chat':{
-      addChat(m.name,m.msg,'');
+      addChat(m.name,m.msg,m.sys?'sys':'');
       break;
     }
   }
@@ -1030,10 +1258,16 @@ function updateScoreboard(){
   const body=$('#scoreBody');
   if(!body)return;
   const myId=Net.offline?'me':Net.id;
-  const rows=(scoreData||[]).slice().sort((a,b)=>b.kills-a.kills||a.deaths-b.deaths);
+  const title=$('#scoreTitle');
+  if(title){
+    const sideStr=myTeam===0?'烈焰 (橙)':'雷霆 (蓝)';
+    title.textContent='作战战绩 · 我方阵营（已锁定）：'+sideStr+' · 房间人数 '+(Net.offline?(remote.size+1):(roomCount+'/'+roomMaxPlayers));
+  }
+  const rows=(scoreData||[]).slice().sort((a,b)=>(a.team===myTeam?-1:1)-(b.team===myTeam?-1:1)||b.kills-a.kills||a.deaths-b.deaths);
   body.innerHTML=rows.map(r=>{
     const me=r.id===myId?' class="me"':'';
-    return '<tr'+me+'><td class="'+(r.team===0?'t0':'t1')+'">'+r.name+'</td><td>'+
+    const relation=r.id===myId?' [我]':(r.team===myTeam?' [友军]':' [敌军]');
+    return '<tr'+me+'><td class="'+(r.team===0?'t0':'t1')+'">'+r.name+relation+'</td><td>'+
       (r.team===0?'烈焰':'雷霆')+'</td><td>'+r.kills+'</td><td>'+r.deaths+'</td><td>'+
       (r.alive?'作战中':'部署中')+'</td></tr>';
   }).join('');
@@ -1056,9 +1290,9 @@ function takeDamage(dmg,fromId,weapon,fromPos,serverHp){
     arrow.firstElementChild.style.transform='rotate('+(-ang*180/Math.PI)+'deg)';
     clearTimeout(arrow._t);arrow._t=setTimeout(()=>{arrow.style.opacity=0;},760);
   }
-  if(hp<=0)die(fromId,weapon);
+  if(hp<=0)die(fromId,weapon,false);
 }
-function die(byId,weapon){
+function die(byId,weapon,skipFeed){
   if(!alive)return;
   alive=false;hp=0;
   SFX.die();
@@ -1066,8 +1300,10 @@ function die(byId,weapon){
   refreshOfflineScores();
   $('#deathScreen').classList.remove('hidden');
   respawnTimer=3.2;
-  const kn=remote.get(byId)?remote.get(byId).name:'未知';
-  addKill(kn,myName,weapon,false);
+  if(Net.offline&&!skipFeed){
+    const kn=remote.get(byId)?remote.get(byId).name:'未知';
+    addKill(kn,myName,weapon,false);
+  }
   vel.set(0,0,0);
 }
 function checkOfflineWin(){
@@ -1077,21 +1313,37 @@ function checkOfflineWin(){
   if(enemyAlive>0)return;
   offOver=true;
   refreshOfflineScores();
-  setTimeout(showWinScreen,750);
+  setTimeout(()=>showWinScreen('wipe'),750);
 }
-function showWinScreen(){
-  const acc=offStats.shots?Math.round(offStats.hits/offStats.shots*100):0;
-  let mateKills=0;
-  remote.forEach(r=>{if(r.team===myTeam)mateKills+=r.kills||0;});
+function showWinScreen(reason){
+  const rows=scoreData||[];
+  const k0=rows.filter(r=>r.team===0).reduce((s,r)=>s+(r.kills||0),0);
+  const k1=rows.filter(r=>r.team===1).reduce((s,r)=>s+(r.kills||0),0);
+  const myKills=Net.offline?offStats.kills:((rows.find(r=>r.id===Net.id)||{}).kills||0);
+  const myDeaths=Net.offline?offStats.deaths:((rows.find(r=>r.id===Net.id)||{}).deaths||0);
+  const myTeamKills=myTeam===0?k0:k1;
+  const enemyTeamKills=myTeam===0?k1:k0;
   const t=Math.round(gameTime),mm=~~(t/60),ss=t%60;
-  $('#winTitle').textContent=(offStats.deaths===0&&acc>=45)?'完美胜利':'任务完成';
+  const sideStr=myTeam===0?'烈焰 (橙)':'雷霆 (蓝)';
+  let titleTxt='时间到 · 平局';
+  if(reason==='wipe'){
+    const acc=offStats.shots?Math.round(offStats.hits/offStats.shots*100):0;
+    titleTxt=(offStats.deaths===0&&acc>=45)?'完美胜利':'我方胜利';
+  }else{
+    if(myTeamKills>enemyTeamKills)titleTxt='时间到 · 我方胜利！';
+    else if(myTeamKills<enemyTeamKills)titleTxt='时间到 · 敌方获胜';
+    else titleTxt='时间到 · 双方平局';
+  }
+  $('#winTitle').textContent=titleTxt;
+  const topPlayer=rows.slice().sort((a,b)=>b.kills-a.kills||a.deaths-b.deaths)[0];
+  const mvpStr=topPlayer?(topPlayer.name+' ('+topPlayer.kills+' 击杀)'):'无';
   $('#winStats').innerHTML=
-    '<div class="row hl"><span>击杀</span><b>'+offStats.kills+'</b></div>'+
-    '<div class="row"><span>阵亡</span><b>'+offStats.deaths+'</b></div>'+
-    '<div class="row"><span>友军击杀</span><b>'+mateKills+'</b></div>'+
-    '<div class="row"><span>爆头</span><b>'+offStats.headshots+'</b></div>'+
-    '<div class="row"><span>命中率</span><b>'+acc+'%</b></div>'+
-    '<div class="row"><span>用时</span><b>'+mm+' 分 '+ss+' 秒</b></div>';
+    '<div class="row hl"><span>我方阵营</span><b>'+sideStr+'</b></div>'+
+    '<div class="row hl"><span>阵营总比分（烈焰 : 雷霆）</span><b>'+k0+' : '+k1+'</b></div>'+
+    '<div class="row"><span>个人战绩（击杀 / 阵亡）</span><b>'+myKills+' / '+myDeaths+'</b></div>'+
+    '<div class="row"><span>全场最佳 (MVP)</span><b>'+mvpStr+'</b></div>'+
+    '<div class="row"><span>对局用时</span><b>'+mm+' 分 '+ss+' 秒</b></div>';
+  $('#deathScreen').classList.add('hidden');
   $('#winScreen').classList.remove('hidden');
   paused=true;
   if(document.exitPointerLock)document.exitPointerLock();
@@ -1115,17 +1367,22 @@ function resetOfflineRound(){
   updateWeaponUI();
   resumeAudio();requestLock();
 }
-$('#btnAgain').addEventListener('click',()=>{ if(Net.offline)resetOfflineRound(); });
+$('#btnAgain').addEventListener('click',()=>{
+  if(Net.offline)resetOfflineRound();
+  else Net.send({t:'restart'});
+});
 $('#btnMenu').addEventListener('click',()=>location.reload());
 function doRespawn(){
   alive=true;hp=100;
   const sp=pickSpawn(myTeam,1);
   playerPos.copy(sp);vel.set(0,0,0);
+  yaw=myTeam===0?-Math.PI/2:Math.PI/2;
   WORDER.forEach(k=>{const w=WEAPONS[k];ammoState[k]={mag:w.mag,reserve:w.reserve};});
   reloading=false;
   $('#deathScreen').classList.add('hidden');
   $('#vignette').style.opacity=0;
-  Net.send({t:'respawn'});
+  Net.send({t:'respawn',p:[+playerPos.x.toFixed(2),+playerPos.y.toFixed(2),+playerPos.z.toFixed(2)]});
+  sendImmediateState();
 }
 let respawnTimer=0;
 const offStats={kills:0,deaths:0,shots:0,hits:0,headshots:0};
@@ -1184,6 +1441,14 @@ function tryFire(){
   flashSprite.position.copy(mpos);flashSprite.material.opacity=1;flashSprite.visible=!w.melee;
   flashSprite.scale.setScalar(w.name==='AWM'?.7:.42);
   addTracer(mpos,hit?hit.point:camera.position.clone().addScaledVector(dir,w.range),0xffd9a0);
+  if(!Net.offline&&Net.connected){
+    Net.send({
+      t:'shoot',
+      o:[+mpos.x.toFixed(2),+mpos.y.toFixed(2),+mpos.z.toFixed(2)],
+      d:[+dir.x.toFixed(3),+dir.y.toFixed(3),+dir.z.toFixed(3)],
+      wep:WORDER[curW]
+    });
+  }
 
   if(hit){
     const ud=hit.object.userData;
@@ -1360,6 +1625,12 @@ function animate(){
 
   if(gameStarted&&!paused){
     gameTime+=dt;
+    if(!offOver&&gameTime>=matchDuration){
+      gameTime=matchDuration;
+      offOver=true;
+      if(Net.offline)refreshOfflineScores();
+      showWinScreen('time');
+    }
 
     /* 输入 -> 速度 */
     if(alive){
@@ -1450,10 +1721,16 @@ function animate(){
     netAcc+=dt;
     if(netAcc>=1/15){
       netAcc=0;
-      if(!Net.offline&&Net.connected){
-        Net.send({t:'s',p:[+playerPos.x.toFixed(2),+playerPos.y.toFixed(2),+playerPos.z.toFixed(2)],
-          ry:+yaw.toFixed(3),rx:+pitch.toFixed(3),wep:WORDER[curW],mv:(Math.abs(vel.x)+Math.abs(vel.z))>1?1:0,alive});
-      }
+      sendImmediateState();
+    }
+    drawMinimap();
+  }else if(gameStarted&&!Net.offline){
+    /* 暂停或打开菜单时仍保持远程玩家位置更新与状态上报，确保其他玩家能看到自己 */
+    remote.forEach(r=>r.update(dt));
+    netAcc+=dt;
+    if(netAcc>=1/10){
+      netAcc=0;
+      sendImmediateState();
     }
     drawMinimap();
   }
@@ -1470,45 +1747,79 @@ function animate(){
   }
   const moving=Math.abs(vel.x)+Math.abs(vel.z)>1;
   $('#crosshair').style.setProperty('--gap',(6+spreadAccum*430+(moving?4:0)+(grounded?0:9))+'px');
-  const mm=~~(gameTime/60),ss=~~(gameTime%60);
-  $('#timer').textContent=(mm<10?'0':'')+mm+':'+(ss<10?'0':'')+ss;
+  const rem=Math.max(0,Math.ceil(matchDuration-gameTime));
+  const mm=~~(rem/60),ss=rem%60;
+  const timerTxt=$('#timerTxt')||$('#timer');
+  timerTxt.textContent=(mm<10?'0':'')+mm+':'+(ss<10?'0':'')+ss;
 
   renderer.render(scene,camera);
 }
 animate();
 
-/* ==================== 启动流程 ==================== */
+/* ==================== 启动流程 & 局域网自动发现 ==================== */
+function resolveWsUrl(customHost){
+  const h=(customHost||'').trim();
+  const hostWrapHidden=$('#hostFieldWrap').classList.contains('hidden');
+  /* 当从 HTTP/HTTPS 打开页面且未展开手动 IP 时，自动连接当前页面所属服务器，无需手动输入 ws:// 地址 */
+  if(hostWrapHidden&&(location.protocol==='http:'||location.protocol==='https:')&&location.host){
+    const proto=location.protocol==='https:'?'wss://':'ws://';
+    return proto+location.host;
+  }
+  if(!h)return 'ws://localhost:8080';
+  if(/^wss?:\/\//i.test(h))return h;
+  if(/^https?:\/\//i.test(h))return h.replace(/^http/i,'ws');
+  return 'ws://'+(h.includes(':')?h:(h+':8080'));
+}
+
 function startGame(offline,host,name){
   myName=name||'战士';
-  gameStarted=true;
-  $('#menu').classList.add('hidden');
-  $('#hud').classList.remove('hidden');
-  $('#startPrompt').classList.remove('hidden');
-  updateWeaponUI();
-  const sp=pickSpawn(offline?0:myTeam,1);
-  playerPos.copy(sp);
+  const maxP=parseInt($('#maxPlayersSelect').value,10)||10;
+  roomMaxPlayers=maxP;
+  $('#menuMsg').textContent='';
   if(offline){
     Net.offline=true;
-    myTeam=0;
-    spawnBots();
+    myTeam=preferredTeam===-1?0:preferredTeam;
+    gameStarted=true;
+    $('#menu').classList.add('hidden');
+    $('#hud').classList.remove('hidden');
+    $('#startPrompt').classList.remove('hidden');
+    updateWeaponUI();
+    updateSideHUD();
+    updateRoomCapHUD();
+    const sp=pickSpawn(myTeam,1);
+    playerPos.copy(sp);
+    yaw=myTeam===0?-Math.PI/2:Math.PI/2;
+    spawnBots(maxP);
     refreshOfflineScores();
-    addChat('系统','离线练枪模式：消灭所有机器人','sys');
+    addChat('系统','离线练枪模式 · 你的阵营（已锁定）：'+(myTeam===0?'烈焰 (橙)':'雷霆 (蓝)'),'sys');
   }else{
     Net.offline=false;
-    Net.connect(host,myName).then(()=>{
-      addChat('系统','已连接 '+host,'sys');
+    const btn=$('#btnJoin');
+    btn.disabled=true;btn.textContent='连接中…';
+    Net.connect(host,myName,preferredTeam,maxP).then(()=>{
+      btn.disabled=false;btn.textContent='加入对战';
+      gameStarted=true;
+      $('#menu').classList.add('hidden');
+      $('#hud').classList.remove('hidden');
+      $('#startPrompt').classList.remove('hidden');
+      updateWeaponUI();
+      updateSideHUD();
+      updateRoomCapHUD();
     }).catch(err=>{
-      $('#menu').classList.remove('hidden');
-      $('#hud').classList.add('hidden');
+      btn.disabled=false;btn.textContent='加入对战';
       gameStarted=false;
-      $('#menuMsg').textContent='连接失败：'+err.message+'（可尝试离线练枪）';
+      $('#menuMsg').textContent='加入失败：'+err.message+'（可检查服务器是否启动，或点击离线练枪）';
     });
   }
 }
-function spawnBots(){
-  const names=['幽灵','雷霆','暗夜','狂徒','孤狼','猎鹰','毒蛇','战狼'];
+function spawnBots(totalPlayers){
+  remote.forEach(r=>r.destroy());
+  remote.clear();
+  const total=clamp(totalPlayers||8,2,16);
+  const enemyCount=Math.max(1,Math.ceil(total/2));
+  const allyCount=Math.max(0,total-1-enemyCount);
+  const names=['幽灵','雷霆','暗夜','狂徒','孤狼','猎鹰','毒蛇','战狼','铁壁','苍穹','赤狐','风暴','利刃','寒霜','烈阳'];
   const mk=(id,name,team)=>{
-    /* 在本方半场撒点，若卡进墙体则螺旋搜索最近的空位，并与玩家/其他机器人保持距离 */
     const seed=findFreeSpot((team===myTeam?-29:29)+rnd(-7,7),rnd(-16,16),2)
              ||findFreeSpot(team===myTeam?-30:30,0,2)
              ||{x:team===myTeam?-33:33,z:0};
@@ -1520,32 +1831,107 @@ function spawnBots(){
     rp.isBot=true;
     remote.set(id,rp);
   };
-  mk('bot0',names[0],myTeam);   /* 友军 ×3 */
-  mk('bot1',names[1],myTeam);
-  mk('bot2',names[2],myTeam);
-  for(let i=3;i<8;i++)mk('bot'+i,names[i],1-myTeam);   /* 敌军 ×5 */
+  let idx=0;
+  for(let i=0;i<allyCount;i++,idx++)mk('bot'+idx,names[idx%names.length],myTeam);
+  for(let i=0;i<enemyCount;i++,idx++)mk('bot'+idx,names[idx%names.length],1-myTeam);
 }
+/* 阵营选择按钮 */
+document.querySelectorAll('#teamPick .team-opt').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#teamPick .team-opt').forEach(b=>b.classList.remove('act'));
+    btn.classList.add('act');
+    preferredTeam=parseInt(btn.getAttribute('data-team'),10);
+  });
+});
+
+/* 房间人数上限调整（若连接在线服务器则实时同步） */
+$('#maxPlayersSelect').addEventListener('change',()=>{
+  const v=parseInt($('#maxPlayersSelect').value,10)||10;
+  roomMaxPlayers=v;
+  if(location.protocol==='http:'||location.protocol==='https:'){
+    fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({maxPlayers:v})})
+      .then(r=>r.json()).then(applyLobbyInfo).catch(()=>{});
+  }
+});
+
+/* 展开/收起手动服务器地址（用于直接双击打开 HTML 或跨网段连接） */
+$('#btnToggleHost').addEventListener('click',()=>{
+  const w=$('#hostFieldWrap');
+  w.classList.toggle('hidden');
+  pollLobbyInfo();
+});
+
+/* 一键复制局域网联机网址 */
+$('#btnCopyUrl').addEventListener('click',()=>{
+  const u=$('#inviteUrl').textContent.trim();
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(u).then(()=>toast('已复制联机网址：'+u,2400)).catch(()=>{});
+  }else{
+    const ta=document.createElement('textarea');ta.value=u;document.body.appendChild(ta);
+    ta.select();try{document.execCommand('copy');toast('已复制联机网址：'+u,2400);}catch(e){}
+    document.body.removeChild(ta);
+  }
+});
+
 $('#btnJoin').addEventListener('click',()=>{
   initAudio();resumeAudio();
-  const name=$('#nameInput').value.trim()||'战士';
-  let host=$('#hostInput').value.trim();
-  if(!/^wss?:\/\//.test(host))host='ws://'+host;
-  try{localStorage.setItem('fs_host',host);}catch(e){}
+  const name=$('#nameInput').value.trim()||('战士'+((Math.random()*900+100)|0));
+  const host=resolveWsUrl($('#hostInput').value);
+  try{localStorage.setItem('fs_name',name);}catch(e){}
   startGame(false,host,name);
 });
 $('#btnOffline').addEventListener('click',()=>{
   initAudio();resumeAudio();
-  const name=$('#nameInput').value.trim()||'战士';
+  const name=$('#nameInput').value.trim()||'战士001';
   startGame(true,'',name);
 });
+
+function applyLobbyInfo(info){
+  if(!info||typeof info.maxPlayers!=='number')return;
+  roomMaxPlayers=info.maxPlayers;
+  roomCount=info.count||0;
+  const dot=$('#lobbyDot'),txt=$('#lobbyText'),inv=$('#inviteUrl'),sel=$('#maxPlayersSelect');
+  if(dot)dot.classList.add('ok');
+  const t0=(info.teams&&info.teams[0])||0,t1=(info.teams&&info.teams[1])||0;
+  if(txt)txt.textContent='服务器在线 · 房间人数 '+roomCount+'/'+roomMaxPlayers+' 人（烈焰 '+t0+' : 雷霆 '+t1+'）';
+  if(inv&&info.primaryUrl)inv.textContent=info.primaryUrl;
+  if(sel&&document.activeElement!==sel){
+    const opt=sel.querySelector('option[value="'+info.maxPlayers+'"]');
+    if(opt)sel.value=String(info.maxPlayers);
+  }
+}
+
+function pollLobbyInfo(){
+  if(gameStarted)return;
+  let apiBase='';
+  if(location.protocol==='http:'||location.protocol==='https:'){
+    apiBase=location.origin;
+  }else{
+    const raw=($('#hostInput').value||'localhost:8080').replace(/^(wss?|https?):\/\//i,'');
+    apiBase='http://'+(raw.includes(':')?raw:(raw+':8080'));
+  }
+  fetch(apiBase+'/api/info',{cache:'no-store'}).then(r=>r.json()).then(applyLobbyInfo).catch(()=>{
+    const dot=$('#lobbyDot'),txt=$('#lobbyText');
+    if(dot)dot.classList.remove('ok');
+    if(txt)txt.textContent='未检测到本地服务器（请运行 node server.js，或直接点击离线练枪）';
+  });
+}
+
 (function(){
   try{
-    const saved=localStorage.getItem('fs_host');
-    if(saved)$('#hostInput').value=saved;
-    else if(location.protocol==='http:'||location.protocol==='https:'){
-      $('#hostInput').value='ws://'+location.hostname+':8080';
+    const savedName=localStorage.getItem('fs_name');
+    if(savedName)$('#nameInput').value=savedName;
+    else $('#nameInput').value='战士'+((Math.random()*900+100)|0);
+    if(location.protocol==='http:'||location.protocol==='https:'){
+      const wsProto=location.protocol==='https:'?'wss://':'ws://';
+      $('#hostInput').value=wsProto+location.host;
+      $('#inviteUrl').textContent=location.origin;
+    }else{
+      $('#hostFieldWrap').classList.remove('hidden');
     }
   }catch(e){}
+  pollLobbyInfo();
+  setInterval(pollLobbyInfo,2500);
 })();
 
 addEventListener('resize',()=>{
@@ -1554,11 +1940,14 @@ addEventListener('resize',()=>{
   renderer.setSize(innerWidth,innerHeight);
 });
 
-/* 记分板数据（离线模式本地统计） */
+/* 记分板数据（离线模式本地统计） & 在线心跳保活 */
 setInterval(()=>{
   if(!gameStarted)return;
   if(Net.offline)refreshOfflineScores();
-  else updateTopScores();
+  else{
+    updateTopScores();
+    Net.send({t:'ping',ts:Date.now()});
+  }
 },1000);
 
 })();
