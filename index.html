@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
 <title>火线对决 · LAN 对战</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -201,6 +201,123 @@ button.ghost:hover{background:rgba(127,212,255,.12);color:#fff}
   background:rgba(255,106,0,.16);border:1px solid rgba(255,106,0,.5);letter-spacing:.22em;font-size:13px;
   opacity:0;transition:.35s;pointer-events:none}
 #toast.on{opacity:1}
+
+/* ==================== 触屏 / 手机适配 ==================== */
+body.touch{
+  --stick:clamp(100px,29vmin,170px);
+  --pad:clamp(48px,12vmin,70px);
+  --fire:clamp(78px,19vmin,112px);
+  touch-action:none;overscroll-behavior:none;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;
+}
+body.touch .deskHelp{display:none}
+.help.touchHelp{display:none}
+body.touch .help.touchHelp{display:block}
+/* 手机屏幕矮，主菜单改为可滚动，避免按钮被挤出屏幕 */
+body.touch #menu{display:block;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  padding:env(safe-area-inset-top) 0 calc(24px + env(safe-area-inset-bottom))}
+body.touch .menu-inner{width:min(720px,94vw);margin:0 auto;padding:14px 0 0}
+body.touch .badge{font-size:10px;padding:4px 12px;letter-spacing:.24em}
+body.touch h1{font-size:clamp(34px,9.5vw,72px);margin:12px 0 4px}
+body.touch h1 .en{font-size:.2em;margin-top:8px;letter-spacing:.4em}
+body.touch .sub{font-size:12.5px;letter-spacing:.05em;margin:12px 0 18px;line-height:1.7}
+body.touch .field{flex:1 1 45%}
+body.touch .field input,body.touch .field select{width:100%;padding:10px 12px;font-size:14px}
+body.touch .team-pick .team-opt{flex:1;text-align:center;padding:10px 6px;font-size:12px}
+body.touch .lobby-card{padding:10px 12px;margin-bottom:14px}
+body.touch .lobby-row,body.touch .lobby-meta{font-size:11px}
+body.touch .btns{margin-bottom:14px}
+body.touch .btns button{flex:1;padding:14px 10px;font-size:14px;letter-spacing:.16em}
+body.touch .help{font-size:11.5px;line-height:1.9;letter-spacing:.06em}
+@media (max-height:520px){
+  body.touch h1{font-size:clamp(28px,7.5vw,48px);margin:8px 0 2px}
+  body.touch .sub{display:none}
+  body.touch .lobby-card{padding:8px 12px;margin-bottom:10px}
+  body.touch .lobby-meta{display:none}
+}
+
+/* HUD 缩排，给底部摇杆/按键让位 */
+body.touch #mmWrap{width:clamp(88px,19vmin,130px);height:clamp(88px,19vmin,130px);
+  left:calc(8px + env(safe-area-inset-left));top:calc(8px + env(safe-area-inset-top))}
+body.touch #minimap{width:100%;height:100%}
+body.touch #mmLabel{display:none}
+body.touch #topbar{top:calc(4px + env(safe-area-inset-top))}
+body.touch #topbar .side{min-width:82px;height:34px;font-size:17px;padding:0 9px}
+body.touch #topbar .side small{font-size:9px}
+body.touch #timer{height:34px;font-size:13px;padding:0 9px}
+body.touch #roomCapHud{font-size:8px;letter-spacing:.12em}
+body.touch #mySideBadge{display:none}
+body.touch #killfeed{top:calc(48px + env(safe-area-inset-top));right:calc(8px + env(safe-area-inset-right));gap:4px}
+body.touch .kf{font-size:11px;padding:4px 8px;gap:6px}
+body.touch .kf .w{font-size:9px}
+body.touch #chatlog,body.touch #chatinput{display:none}
+body.touch #bottomLeft{left:calc(12px + env(safe-area-inset-left));
+  bottom:calc(18px + env(safe-area-inset-bottom) + var(--stick) * 1.4);width:clamp(112px,26vmin,178px)}
+body.touch #hpnum{font-size:clamp(28px,6.5vmin,46px)}
+body.touch #hpnum small{font-size:clamp(9px,2.2vmin,12px);letter-spacing:.12em;margin-left:6px}
+body.touch #hpwrap{height:5px;margin-top:6px}
+body.touch #bottomRight{right:calc(12px + env(safe-area-inset-right));
+  bottom:calc(18px + env(safe-area-inset-bottom) + var(--pad) + var(--fire) + 10px)}
+body.touch #wname{font-size:clamp(10px,2.4vmin,13px);letter-spacing:.2em}
+body.touch #ammo{font-size:clamp(26px,6vmin,44px)}
+body.touch #ammo .slash{font-size:.55em;margin:0 4px}
+body.touch #ammoRes{font-size:.55em}
+body.touch #wslots{display:none}
+body.touch #reloadTip{height:13px;font-size:9px;letter-spacing:.2em}
+body.touch #dmgDir{width:62vmin;height:62vmin}
+body.touch #crosshair{width:48px;height:48px}
+body.touch #scoreboard{padding:16px 14px;width:min(94vw,560px)}
+body.touch #scoreboard h3{font-size:11px;letter-spacing:.24em;margin-bottom:10px}
+body.touch #scoreboard th{font-size:9px;letter-spacing:.12em;padding:6px 4px}
+body.touch #scoreboard td{font-size:12px;padding:8px 4px}
+@media (orientation:portrait){
+  body.touch #mmWrap{top:calc(44px + env(safe-area-inset-top))}
+}
+
+/* ---- 触屏控件本体 ---- */
+#lookZone{position:absolute;inset:0;z-index:1;pointer-events:none;touch-action:none}
+body.touch #lookZone{pointer-events:auto}
+#touchUI{position:absolute;inset:0;z-index:6;pointer-events:none}
+#deathScreen{z-index:10}
+#winScreen{z-index:12}
+
+#stickZone{position:absolute;left:calc(10px + env(safe-area-inset-left));bottom:calc(10px + env(safe-area-inset-bottom));
+  width:calc(var(--stick) * 1.4);height:calc(var(--stick) * 1.4);
+  display:flex;align-items:center;justify-content:center;pointer-events:auto;touch-action:none}
+#stickBase{position:relative;width:var(--stick);height:var(--stick);border-radius:50%;
+  background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.1),rgba(8,12,16,.46) 72%);
+  border:1.5px solid rgba(255,255,255,.24);
+  box-shadow:inset 0 0 24px rgba(0,0,0,.5),0 4px 18px rgba(0,0,0,.32)}
+#stickBase::after{content:'';position:absolute;inset:20%;border-radius:50%;border:1px dashed rgba(255,255,255,.14)}
+#stickKnob{position:absolute;left:50%;top:50%;width:calc(var(--stick) * .42);height:calc(var(--stick) * .42);
+  border-radius:50%;transform:translate(-50%,-50%);
+  background:radial-gradient(circle at 38% 32%,rgba(255,255,255,.7),rgba(255,140,60,.72) 55%,rgba(160,60,0,.82));
+  border:1.5px solid rgba(255,255,255,.5);
+  box-shadow:0 3px 14px rgba(0,0,0,.45),0 0 20px rgba(255,106,0,.32)}
+
+#rightPad{position:absolute;right:calc(10px + env(safe-area-inset-right));bottom:calc(10px + env(safe-area-inset-bottom));
+  display:grid;grid-template-columns:repeat(3,auto);gap:10px;align-items:end;justify-items:end;pointer-events:none}
+#touchUI .tbtn{display:flex;align-items:center;justify-content:center;width:var(--pad);height:var(--pad);
+  border-radius:50%;border:1.5px solid rgba(255,255,255,.3);background:rgba(10,14,19,.44);
+  color:var(--txt);font-family:var(--disp);font-weight:700;font-size:clamp(11px,2.6vmin,15px);
+  letter-spacing:.04em;line-height:1;pointer-events:auto;touch-action:none;
+  box-shadow:0 2px 10px rgba(0,0,0,.32);
+  transition:transform .07s,background .12s,border-color .12s,color .12s}
+#touchUI .tbtn.act{background:rgba(255,106,0,.45);border-color:var(--accent);transform:scale(.92)}
+#touchUI .tbtn.on{background:rgba(127,212,255,.28);border-color:var(--accent2);color:#fff}
+#touchUI #btnFire{width:var(--fire);height:var(--fire);font-size:clamp(14px,3.4vmin,20px);letter-spacing:.1em;
+  background:radial-gradient(circle at 40% 32%,rgba(255,150,60,.8),rgba(190,60,0,.75));
+  border:2px solid rgba(255,170,90,.85);
+  box-shadow:0 0 22px rgba(255,106,0,.35),0 4px 14px rgba(0,0,0,.42)}
+#touchUI #btnFire.act{background:radial-gradient(circle at 40% 32%,rgba(255,215,130,.95),rgba(255,90,0,.92));transform:scale(.95)}
+/* 瞄准键按住状态：提示“松手开火” */
+#touchUI #btnAim.armed{background:rgba(255,106,0,.52);border-color:#ffd28a;color:#fff;
+  font-size:clamp(9px,2vmin,12px);letter-spacing:0;transform:scale(.97);
+  animation:aimArmed 1s ease-in-out infinite}
+@keyframes aimArmed{
+  0%,100%{box-shadow:0 0 0 0 rgba(255,138,40,.55),0 2px 10px rgba(0,0,0,.32)}
+  50%{box-shadow:0 0 0 9px rgba(255,138,40,0),0 2px 10px rgba(0,0,0,.32)}
+}
 </style>
 </head>
 <body>
@@ -254,15 +371,31 @@ button.ghost:hover{background:rgba(127,212,255,.12);color:#fff}
       <button id="btnJoin">加入对战</button>
       <button id="btnOffline" class="ghost">离线练枪</button>
     </div>
-    <div class="help">
+    <div class="help deskHelp">
       <b>WASD</b> 移动 &nbsp;·&nbsp; <b>SHIFT</b> 冲刺 &nbsp;·&nbsp; <b>空格</b> 跳跃 &nbsp;·&nbsp; <b>CTRL</b> 蹲下 &nbsp;·&nbsp; <b>鼠标左键</b> 开火 &nbsp;·&nbsp; <b>右键</b> 瞄准<br>
       <b>R</b> 换弹 &nbsp;·&nbsp; <b>1-5</b> 切枪 &nbsp;·&nbsp; <b>Q</b> 上一把武器 &nbsp;·&nbsp; <b>Tab</b> 战绩板 &nbsp;·&nbsp; <b>Enter</b> 聊天 (支持 <code>/max 人数</code>) &nbsp;·&nbsp; 对局时长 <b>20 分钟</b>
+    </div>
+    <div class="help touchHelp">
+      <b>左摇杆</b> 移动 · 推到底自动冲刺 &nbsp;·&nbsp; <b>拖动屏幕</b> 转视角<br>
+      <b>开火</b> 射击 · <b>瞄准</b> 狙击枪按住开镜、<b>松手即开火</b> · <b>跳</b> 跳跃 · <b>蹲</b> 蹲下(可切换) · <b>换弹</b> · <b>换枪</b> 循环切换武器 &nbsp;·&nbsp; 对局时长 <b>20 分钟</b>
     </div>
     <div id="menuMsg"></div>
   </div>
 </div>
 
 <div id="hud" class="hidden">
+  <div id="lookZone"></div>
+  <div id="touchUI" class="hidden">
+    <div id="stickZone"><div id="stickBase"><div id="stickKnob"></div></div></div>
+    <div id="rightPad">
+      <div class="tbtn" id="btnReload">换弹</div>
+      <div class="tbtn" id="btnSwap">换枪</div>
+      <div class="tbtn" id="btnCrouch">蹲</div>
+      <div class="tbtn" id="btnJump">跳</div>
+      <div class="tbtn" id="btnAim">瞄准</div>
+      <div class="tbtn" id="btnFire">开火</div>
+    </div>
+  </div>
   <div id="crosshair"><i></i><i></i><i></i><i></i><i></i></div>
   <div id="hitmarker"><i></i><i></i><i></i><i></i></div>
   <div id="topbar">
@@ -327,6 +460,13 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const rnd=(a,b)=>a+Math.random()*(b-a);
 const nowS=()=>performance.now()/1000;
 function toast(msg,ms){const t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),ms||2600);}
+
+/* 触屏设备检测：粗指针 + 触摸点；可用 ?touch=1 / ?touch=0 强制开关 */
+const IS_TOUCH=(function(){
+  try{const q=new URLSearchParams(location.search).get('touch');if(q==='1')return true;if(q==='0')return false;}catch(e){}
+  return (navigator.maxTouchPoints||0)>0&&!!(window.matchMedia&&matchMedia('(pointer: coarse)').matches);
+})();
+if(IS_TOUCH&&document.body)document.body.classList.add('touch');
 
 /* ==================== 音频（程序化合成） ==================== */
 let actx=null,master=null,noiseBuf=null;
@@ -425,7 +565,7 @@ const texSandbag=texFrom(cvs(128,(ctx,s)=>{
 
 /* ==================== 场景 ==================== */
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.8));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,IS_TOUCH?1.5:1.8));
 renderer.setSize(innerWidth,innerHeight);
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.outputEncoding=THREE.sRGBEncoding;
@@ -1295,6 +1435,7 @@ function takeDamage(dmg,fromId,weapon,fromPos,serverHp){
 function die(byId,weapon,skipFeed){
   if(!alive)return;
   alive=false;hp=0;
+  if(IS_TOUCH){touch.fire=false;touch.aim=false;}   /* 死亡时清掉触摸按键，防止重生后自动开火 */
   SFX.die();
   if(Net.offline)offStats.deaths++;
   refreshOfflineScores();
@@ -1569,10 +1710,12 @@ addEventListener('mousemove',e=>{
   pitch=clamp(pitch,-1.53,1.53);
 });
 function requestLock(){
+  if(IS_TOUCH)return;            /* 手机端没有指针锁，直接跳过 */
   const el=renderer.domElement;
-  if(el.requestPointerLock)el.requestPointerLock();
+  if(el&&el.requestPointerLock){try{const p=el.requestPointerLock();if(p&&p.catch)p.catch(function(){});}catch(e){}}
 }
 document.addEventListener('pointerlockchange',()=>{
+  if(IS_TOUCH)return;            /* 触屏模式不受指针锁影响，避免误暂停 */
   lockHeld=document.pointerLockElement===renderer.domElement;
   if(!gameStarted)return;
   const chatOpen=!$('#chatinput').classList.contains('hidden');
@@ -1580,10 +1723,159 @@ document.addEventListener('pointerlockchange',()=>{
   if(lockHeld){paused=false;$('#pause').classList.add('hidden');}
   else if(!chatOpen&&!winOpen){paused=true;$('#pause').classList.remove('hidden');}
 });
-$('#pause').addEventListener('click',()=>{resumeAudio();requestLock();});
-$('#startPrompt').addEventListener('click',()=>{resumeAudio();requestLock();$('#startPrompt').classList.add('hidden');});
+$('#pause').addEventListener('click',()=>{
+  resumeAudio();
+  if(IS_TOUCH){paused=false;$('#pause').classList.add('hidden');}
+  else requestLock();
+});
+$('#startPrompt').addEventListener('click',()=>{
+  resumeAudio();
+  if(!IS_TOUCH)requestLock();
+  $('#startPrompt').classList.add('hidden');
+  if(IS_TOUCH)setTimeout(()=>toast('「瞄准」狙击枪按住开镜 · 松手即开火',3200),700);
+});
 
 function netPing(){/* 预留 */}
+
+/* ==================== 触屏（手机）虚拟摇杆 / 按键 ==================== */
+const touch={fire:false,aim:false,crouch:false,move:{x:0,y:0,m:0,active:false}};
+function buzz(ms){try{if(navigator.vibrate)navigator.vibrate(ms);}catch(e){}}
+function setupTouch(){
+  document.body.classList.add('touch');
+  const ui=$('#touchUI');if(ui)ui.classList.remove('hidden');
+  const sm=$('#startPrompt .sm');
+  if(sm)sm.textContent='触屏操作 · 左摇杆移动 / 拖动屏幕转视角';
+  const each=(list,fn)=>{for(let i=0;i<list.length;i++)fn(list[i]);};
+
+  /* ---------- 左侧虚拟摇杆（尺寸随 --stick 自适应） ---------- */
+  const zone=$('#stickZone'),base=$('#stickBase'),knob=$('#stickKnob');
+  let sid=null,cx=0,cy=0,rad=1;
+  function stickReset(){
+    sid=null;
+    touch.move.x=0;touch.move.y=0;touch.move.m=0;touch.move.active=false;
+    if(knob)knob.style.transform='translate(-50%,-50%)';
+  }
+  function stickRead(t){
+    const dx=t.clientX-cx,dy=t.clientY-cy;
+    const len=Math.hypot(dx,dy);
+    const k=Math.min(1,len/rad);
+    const ux=len>.0001?dx/len:0,uy=len>.0001?dy/len:0;
+    if(knob)knob.style.transform='translate(-50%,-50%) translate('+(ux*k*rad).toFixed(1)+'px,'+(uy*k*rad).toFixed(1)+'px)';
+    const dead=.14;                                   /* 摇杆死区，防手抖 */
+    const m=k<=dead?0:(k-dead)/(1-dead);
+    touch.move.x=ux*m;                                /* 右为正 */
+    touch.move.y=-uy*m;                               /* 屏幕上方=前进 */
+    touch.move.m=m;touch.move.active=m>0;
+  }
+  if(zone&&base){
+    zone.addEventListener('touchstart',e=>{
+      if(sid!==null)return;
+      const t=e.changedTouches[0];if(!t)return;
+      const r=base.getBoundingClientRect();
+      rad=r.width*.5;cx=r.left+rad;cy=r.top+rad;
+      sid=t.identifier;stickRead(t);
+      e.preventDefault();
+    },{passive:false});
+    zone.addEventListener('touchmove',e=>{
+      if(sid===null)return;
+      let used=false;
+      each(e.changedTouches,t=>{if(t.identifier===sid){stickRead(t);used=true;}});
+      if(used)e.preventDefault();
+    },{passive:false});
+    ['touchend','touchcancel'].forEach(ev=>zone.addEventListener(ev,e=>{
+      if(sid===null)return;
+      each(e.changedTouches,t=>{if(t.identifier===sid)stickReset();});
+    },{passive:false}));
+  }
+
+  /* ---------- 屏幕拖动转视角（第一根手指） ---------- */
+  const look=$('#lookZone');
+  let lid=null,lx=0,ly=0;
+  const LOOK_SENS=.0036;
+  if(look){
+    look.addEventListener('touchstart',e=>{
+      if(lid!==null||!gameStarted||paused)return;
+      const t=e.changedTouches[0];if(!t)return;
+      lid=t.identifier;lx=t.clientX;ly=t.clientY;
+      e.preventDefault();
+    },{passive:false});
+    look.addEventListener('touchmove',e=>{
+      if(lid===null)return;
+      each(e.changedTouches,t=>{
+        if(t.identifier!==lid)return;
+        yaw-=(t.clientX-lx)*LOOK_SENS;
+        pitch=clamp(pitch-(t.clientY-ly)*LOOK_SENS,-1.53,1.53);
+        lx=t.clientX;ly=t.clientY;
+      });
+      e.preventDefault();
+    },{passive:false});
+    ['touchend','touchcancel'].forEach(ev=>look.addEventListener(ev,e=>{
+      each(e.changedTouches,t=>{if(t.identifier===lid)lid=null;});
+    },{passive:false}));
+  }
+
+  /* ---------- 右侧按键 ---------- */
+  function bindHold(sel,down,up){
+    const el=$(sel);if(!el)return;
+    el.addEventListener('touchstart',e=>{
+      e.preventDefault();e.stopPropagation();
+      if(!gameStarted||paused)return;
+      el.classList.add('act');
+      if(down)down(el);
+    },{passive:false});
+    ['touchend','touchcancel'].forEach(ev=>el.addEventListener(ev,e=>{
+      e.preventDefault();e.stopPropagation();
+      el.classList.remove('act');
+      if(up)up(el);
+    },{passive:false}));
+  }
+  bindHold('#btnFire',()=>{touch.fire=true;buzz(12);tryFire();},()=>{touch.fire=false;});
+  /* 瞄准键：带镜武器（AWM）按住开镜、松手开火；不带镜的枪只当作无效按键，不会误射 */
+  const aimBtn=$('#btnAim');
+  if(aimBtn){
+    let aimHeld=false,aimScoped=false;
+    const aimRelease=()=>{
+      aimHeld=false;aimScoped=false;touch.aim=false;
+      aimBtn.classList.remove('act','armed');
+      aimBtn.textContent='瞄准';
+    };
+    aimBtn.addEventListener('touchstart',e=>{
+      e.preventDefault();e.stopPropagation();
+      if(!gameStarted||paused||aimHeld)return;
+      aimHeld=true;
+      aimScoped=currentWeapon().zoom>0;      /* 只有带镜武器才进入“松手开火”状态 */
+      touch.aim=aimScoped;
+      aimBtn.classList.add('act');
+      if(aimScoped){aimBtn.classList.add('armed');aimBtn.textContent='松手开火';}
+      buzz(10);
+    },{passive:false});
+    aimBtn.addEventListener('touchend',e=>{
+      e.preventDefault();e.stopPropagation();
+      if(!aimHeld)return;
+      const canFire=aimScoped&&currentWeapon().zoom>0&&gameStarted&&!paused&&alive;
+      aimRelease();
+      if(canFire){buzz(14);tryFire();}
+    },{passive:false});
+    aimBtn.addEventListener('touchcancel',e=>{
+      e.preventDefault();e.stopPropagation();aimRelease();   /* 手势被打断时不走火 */
+    },{passive:false});
+  }
+  bindHold('#btnJump',()=>{keys['Space']=true;},()=>{keys['Space']=false;});
+  bindHold('#btnReload',()=>startReload(),()=>{});
+  bindHold('#btnSwap',()=>{setWeapon((curW+1)%WORDER.length);},()=>{});
+  /* 蹲：点击切换，方便一只手同时开火 */
+  const cb=$('#btnCrouch');
+  if(cb)cb.addEventListener('touchstart',e=>{
+    e.preventDefault();e.stopPropagation();
+    if(!gameStarted||paused)return;
+    touch.crouch=!touch.crouch;
+    cb.classList.toggle('on',touch.crouch);
+    SFX.click();
+  },{passive:false});
+
+  if(window.matchMedia&&matchMedia('(orientation: portrait)').matches)setTimeout(()=>toast('横屏游玩视野更好',2600),900);
+}
+if(IS_TOUCH)setupTouch();
 
 /* ==================== 小地图 ==================== */
 const mm=$('#minimap').getContext('2d');
@@ -1639,14 +1931,16 @@ function animate(){
       let ix=0,iz=0;
       if(keys['KeyW'])iz+=1;if(keys['KeyS'])iz-=1;
       if(keys['KeyD'])ix+=1;if(keys['KeyA'])ix-=1;
+      if(IS_TOUCH&&touch.move.active){ix+=touch.move.x;iz+=touch.move.y;}   /* 摇杆：半推=慢走 */
       const wish=new THREE.Vector3().addScaledVector(fwd,iz).addScaledVector(right,ix);
-      if(wish.lengthSq()>0)wish.normalize();
-      crouch=!!(keys['ControlLeft']||keys['ControlRight']);
+      const wishLen=wish.length();
+      if(wishLen>1)wish.multiplyScalar(1/wishLen);
+      crouch=!!(keys['ControlLeft']||keys['ControlRight']||touch.crouch);
       const targetH=crouch?1.22:1.78;
       if(targetH<P_H)P_H=targetH;
       else if(targetH>P_H&&!isColliding())P_H=targetH;
       const eyeH=crouch?EYE_CROUCH:EYE;
-      const sprint=(keys['ShiftLeft']||keys['ShiftRight'])&&!crouch;
+      const sprint=(keys['ShiftLeft']||keys['ShiftRight']||touch.move.m>.82)&&!crouch;   /* 摇杆推到底自动冲刺 */
       const speed=crouch?2.5:(sprint?7.1:5.25);
       const accel=grounded?13.5:3.1;
       const blend=1-Math.exp(-accel*dt);
@@ -1679,7 +1973,7 @@ function animate(){
     }
 
     /* 开火 */
-    if(mouseDown&&currentWeapon().auto)tryFire();
+    if((mouseDown||touch.fire)&&currentWeapon().auto)tryFire();
     if(reloading&&nowS()>=reloadEnd)finishReload();
 
     /* 后坐力恢复 */
@@ -1691,7 +1985,7 @@ function animate(){
 
     /* 瞄准 */
     const w=currentWeapon();
-    const wantZoom=(rightDown&&w.zoom&&!reloading)?w.zoom:1;
+    const wantZoom=((rightDown||touch.aim)&&w.zoom&&!reloading)?w.zoom:1;
     curZoom+=(wantZoom-curZoom)*Math.min(1,dt*12);
     camera.fov=78/Math.max(1,curZoom);
     camera.updateProjectionMatrix();
