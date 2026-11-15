@@ -1,0 +1,32 @@
+{
+  "name": "a-very-simple-shooting-game",
+  "version": "1.0.0",
+  "description": "火线对决 · 基于 Three.js 的 3D 网页 FPS，支持局域网联机对战",
+  "license": "MIT",
+  "author": "leonardo-weasley",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leonardo-weasley/a-very-simple-shooting-game.git"
+  },
+  "homepage": "https://leonardo-weasley.github.io/a-very-simple-shooting-game/",
+  "bugs": {
+    "url": "https://github.com/leonardo-weasley/a-very-simple-shooting-game/issues"
+  },
+  "keywords": [
+    "threejs",
+    "three.js",
+    "fps",
+    "webgl",
+    "game",
+    "lan",
+    "websocket"
+  ],
+  "engines": {
+    "node": ">=14"
+  }
+}

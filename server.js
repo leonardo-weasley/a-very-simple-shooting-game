@@ -3,6 +3,8 @@
  * 火线对决 · LAN 对战服务器
  * 零依赖（内置极简 WebSocket 实现），Node.js 14+ 即可运行
  * 用法：  node server.js        然后浏览器打开 http://<本机IP>:8080
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 leonardo-weasley
  */
 'use strict';
 const http = require('http');
